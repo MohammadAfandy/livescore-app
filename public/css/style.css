@@ -576,6 +576,10 @@ footer {
 }
 
 @media screen and (max-width: 1060px) {
+  html {
+    font-size: 15x;
+  }
+
   .home-container {
     flex-direction: column;
   }
