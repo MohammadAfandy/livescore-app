@@ -28,14 +28,24 @@ class Loader {
 const modal = document.getElementById("myModal");
 const btnCloseModal = modal.querySelector('.btn-close');
 
-// When the user clicks the button, open the modal 
+const openModal = () => {
+  modal.style.display = 'block';
+  document.body.style.overflow = "hidden";
+}
+
+const hideModal = () => {
+  modal.style.display = 'none';
+  document.body.style.overflow = "auto";
+};
+
+// When the user clicks close button
 btnCloseModal.onclick = function() {
-  modal.style.display = "none";
+  hideModal();
 }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
-    modal.style.display = "none";
+    hideModal();
   }
 }

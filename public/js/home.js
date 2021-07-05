@@ -1,6 +1,7 @@
 let dataStandings = [];
 let dataScoreboards = [];
 let eventSelected = {};
+const BLANK_LOGO = '/icons/blank-shield.png';
 
 const containerStanding = document.querySelector('.home-container-item.standing');
 const containerScoreboard = document.querySelector('.home-container-item.scoreboard');
@@ -124,7 +125,7 @@ const setStanding = (dataStandings, index) => {
       <tr>
         <td class="${classTd}" title="${description}">${dataStanding.rank}</td>
         <td>
-            <img class="match-team-logo" src="${dataStanding.logo}">
+            <img class="match-team-logo" src="${dataStanding.logo || BLANK_LOGO}">
             ${dataStanding.shortName}
         </td>
         <td>${dataStanding.play}</td>
@@ -204,7 +205,7 @@ const fetchDataScoreboard = async (date) => {
               <div class="match-container" data-code="${dataScoreboard.code}" data-eventId="${match.eventId}" data-competition="${dataScoreboard.name}">
                 <div class="match-container-item home-team">
                     ${match.homeTeam.shortName}
-                    <img class="match-team-logo" src="${match.homeTeam.logo}">
+                    <img class="match-team-logo" src="${match.homeTeam.logo || BLANK_LOGO}">
                 </div>
                 <div class="match-container-item match-result">
                     <div class="match-score">
@@ -229,7 +230,7 @@ const fetchDataScoreboard = async (date) => {
                     </div>
                 </div>
                 <div class="match-container-item away-team">
-                    <img class="match-team-logo" src="${match.awayTeam.logo}">
+                    <img class="match-team-logo" src="${match.awayTeam.logo || BLANK_LOGO}">
                     ${match.awayTeam.shortName}
                 </div>
               </div>
@@ -251,7 +252,7 @@ const createIcon = (path) => {
   element.src = path;
 };
 
-const colorizeForm = (str) => {
+const colorizeForm = (str = []) => {
   let content = '';
   for (let i = 0; i < str.length; i++) {
     if (str[i] === 'W') {
@@ -276,7 +277,7 @@ const fetchDataEvent = async (code, eventId, competition = '') => {
     const { homeTeam, awayTeam, status, venue, date, attendance } = eventSelected;
     const matchHeaders = modal.querySelectorAll('.match-header-item');
 
-    matchHeaders[0].querySelector('.match-header-logo').setAttribute('src', homeTeam.logo);
+    matchHeaders[0].querySelector('.match-header-logo').setAttribute('src', homeTeam.logo || BLANK_LOGO);
     matchHeaders[0].querySelector('span').innerHTML = homeTeam.name;
     matchHeaders[0].querySelector('div').innerHTML = colorizeForm(homeTeam.form);
 
@@ -295,7 +296,7 @@ const fetchDataEvent = async (code, eventId, competition = '') => {
     }
     matchHeaders[1].querySelector('.match-header-time').innerHTML = `<span class=${textClass}>${textContent}</span>`;
 
-    matchHeaders[2].querySelector('.match-header-logo').setAttribute('src', awayTeam.logo);
+    matchHeaders[2].querySelector('.match-header-logo').setAttribute('src', awayTeam.logo || BLANK_LOGO);
     matchHeaders[2].querySelector('span').innerHTML = awayTeam.name;
     matchHeaders[2].querySelector('div').innerHTML = colorizeForm(awayTeam.form);
 
@@ -351,7 +352,7 @@ const fetchDataEvent = async (code, eventId, competition = '') => {
     matchDetailItems[1].querySelector('span:nth-of-type(2)').innerHTML = attendance;
     matchDetailItems[2].querySelector('span:nth-of-type(2)').innerHTML = competition;
     matchDetailItems[3].querySelector('span:nth-of-type(2)').innerHTML = venue ? venue.name : '-';
-    modal.style.display = "block";
+    openModal();
   } catch (error) {
     alert(error.message);
   } finally {
@@ -360,11 +361,6 @@ const fetchDataEvent = async (code, eventId, competition = '') => {
 };
 
 setInterval(() => {
-  if (datePicker.toString() !== 'Today') return;
-  const datePickerValue = new Date(datePicker.getDate());
-  const selectedDate = moment(datePickerValue).format(dateFormat);
-  fetchDataScoreboard(selectedDate);
-  
   // get is modal open
   if (modal.style.display === 'block') {
     const { code, eventId, competition, status } = eventSelected;
@@ -372,6 +368,12 @@ setInterval(() => {
       fetchDataEvent(code, eventId, competition);
     }
   }
+
+  if (datePicker.toString() !== 'Today') return;
+  const datePickerValue = new Date(datePicker.getDate());
+  const selectedDate = moment(datePickerValue).format(dateFormat);
+  fetchDataScoreboard(selectedDate);
+  
 }, 1000 * 60);
 fetchDataScoreboard(dateNow);
 fetchDataStanding();
